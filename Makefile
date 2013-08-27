@@ -10,9 +10,10 @@ ccflags-y += $(DEBFLAGS)
 
 #obj-m += translog.o
 #obj-m += weblog.o
-obj-m	+=skb_post.o
-obj-m	+=skb_pre.o
-obj-m	+=tcp_post_clone.o
+#obj-m	+=skb_post.o
+#obj-m	+=skb_pre.o
+#obj-m	+=tcp_post_clone.o
+obj-m	+=test_ip_tcp.o
 
 KDIR = /lib/modules/$(shell uname -r)/build
 MDIR = $(PWD)

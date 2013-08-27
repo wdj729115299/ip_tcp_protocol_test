@@ -33,18 +33,18 @@ unsigned int kook_func(unsigned int hooknum,
 		return NF_ACCEPT;
 	tcp_addr = tcp_hdr(skb);
 	pr_info("version:%d, ihl:%d, tos:%d, tot_len:%d,id:%d,\
-frag_off:%d, ttl:%d, protocol:%d, check:%d, saddr:%d, daddr:%d",\
+frag_off:%d, ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4",\
 	ip_addr->version,
 	ip_addr->ihl,
 	ip_addr->tos,
-	ip_addr->tot_len,
-	ip_addr->id, 
-	ip_addr->frag_off,
+	ntohs(ip_addr->tot_len),
+	ntohs(ip_addr->id), 
+	ntohs(ip_addr->frag_off),
 	ip_addr->ttl,
 	ip_addr->protocol,
 	ip_addr->check,
-	ip_addr->saddr,
-	ip_addr->daddr);
+	&ip_addr->saddr,
+	&ip_addr->daddr);
 #if 0
 #if 0
 	printk(KERN_INFO"ip_addr->id:%d\n", ntohs(ip_addr->id));

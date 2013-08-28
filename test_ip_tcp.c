@@ -32,19 +32,35 @@ unsigned int kook_func(unsigned int hooknum,
 	if (ip_addr->protocol != IPPROTO_TCP)
 		return NF_ACCEPT;
 	tcp_addr = tcp_hdr(skb);
-	pr_info("version:%d, ihl:%d, tos:%d, tot_len:%d,id:%d,\
-frag_off:%d, ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4",\
+#if 1
+	pr_info("version:%d, ihl:%d, tos:%x, tot_len:%d,id:%d, frag_off:%d,\
+ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\
 	ip_addr->version,
 	ip_addr->ihl,
 	ip_addr->tos,
 	ntohs(ip_addr->tot_len),
 	ntohs(ip_addr->id), 
-	ntohs(ip_addr->frag_off),
+	ntohs(ip_addr->frag_off) & ~(0x7 << 13),
 	ip_addr->ttl,
 	ip_addr->protocol,
 	ip_addr->check,
 	&ip_addr->saddr,
 	&ip_addr->daddr);
+
+#else
+	pr_info("ip_addr->version:%d", ip_addr->version);
+	pr_info("ip_addr->ihl:%d", ip_addr->ihl);
+	pr_info("ip_addr->tos:%d", ip_addr->tos);
+	pr_info("ip_addr->tot_len:%d", ntohs(ip_addr->tot_len));
+	pr_info("ip_addr->id:%d", ntohs(ip_addr->id));
+	pr_info("ip_addr->frag_off:%d", ntohs(ip_addr->frag_off));
+	pr_info("ip_addr->ttl:%d", ip_addr->ttl);
+	pr_info("ip_addr->protocol:%d", ip_addr->protocol);
+	pr_info("ip_addr->check:%d", ip_addr->check);
+	pr_info("ip_addr->saddr:%pI4", &ip_addr->saddr);
+	pr_info("ip_addr->daddr:%pI4",&ip_addr->daddr);
+#endif
+
 #if 0
 #if 0
 	printk(KERN_INFO"ip_addr->id:%d\n", ntohs(ip_addr->id));

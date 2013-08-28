@@ -32,6 +32,16 @@ unsigned int kook_func(unsigned int hooknum,
 	if (ip_addr->protocol != IPPROTO_TCP)
 		return NF_ACCEPT;
 	tcp_addr = tcp_hdr(skb);
+#if 0
+#define IP_CE		0x8000		/* Flag: "Congestion"		*/
+#define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/
+#define IP_MF		0x2000		/* Flag: "More Fragments"	*/
+#define IP_OFFSET	0x1FFF		/* "Fragment Offset" part	*/
+#endif
+	pr_info("IP_OFFSET:%04x\n", IP_OFFSET);
+	pr_info("ip_addr->frag_off IP_DF:%d\n",ip_addr->frag_off & IP_DF);
+	pr_info("ip_addr->frag_off IP_MF:%d\n",ip_addr->frag_off & IP_MF);
+	
 #if 1
 	pr_info("version:%d, ihl:%d, tos:%x, tot_len:%d,id:%d, frag_off:%d,\
 ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\

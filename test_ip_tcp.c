@@ -43,7 +43,7 @@ unsigned int kook_func(unsigned int hooknum,
 #endif
 	
 #if 1
-#if 1
+#if 0
 	pr_info("version:%d, ihl:%d, tos:%x, tot_len:%d,id:%d, frag_off:%d,\
 ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\
 	ip_addr->version,

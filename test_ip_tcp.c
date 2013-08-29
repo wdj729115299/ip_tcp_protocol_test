@@ -25,18 +25,18 @@ unsigned int kook_func(unsigned int hooknum,
 
 	ip_addr =  ip_hdr(skb);
 	if (ip_addr == NULL ||  ip_addr->protocol != IPPROTO_TCP)
-		return NF_ACCEPT;
+		goto is_accept;
 
 	mach = eth_hdr(skb);
 	if (mach == NULL)
-		return NF_ACCEPT;
+		goto is_accept;
 
 	printk(KERN_INFO"h_dest:%pM, h_source:%pM, h_proto:%x\n", \
 	mach->h_dest, mach->h_source, ntohs(mach->h_proto));
 
 	tcp_addr = tcp_hdr(skb);
 	if (tcp_addr == NULL)
-		return NF_ACCEPT;
+		goto is_accept;
 
 #if 0
 #define IP_CE		0x8000		/* Flag: "Congestion"		*/
@@ -82,7 +82,7 @@ cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\
 	ntohs(tcp_addr->window),
 	tcp_addr->check,
 	ntohs(tcp_addr->urg_ptr));
-
+is_accept:
 	return NF_ACCEPT;
 }
 static struct nf_hook_ops nfho = {

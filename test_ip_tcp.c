@@ -31,7 +31,7 @@ unsigned int kook_func(unsigned int hooknum,
 	if (mach == NULL)
 		goto is_accept;
 
-	printk(KERN_INFO"h_dest:%pM, h_source:%pM, h_proto:%x\n", \
+	pr_info("h_dest:%pM, h_source:%pM, h_proto:%x\n", \
 	mach->h_dest, mach->h_source, ntohs(mach->h_proto));
 
 	tcp_addr = tcp_hdr(skb);
@@ -96,11 +96,6 @@ static struct nf_hook_ops nfho = {
 	*/
 };
 /* static void _exit my_init_module(void)  */
-static inline int ret_mudule(int ret)
-{
-	printk(KERN_INFO"%d\n",ret);
-	return ret;
-}
 static int __init my_init_module(void)
 {
 	int hook_ret = 0;

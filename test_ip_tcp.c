@@ -9,7 +9,7 @@
 #include <net/tcp.h>
 
 #define VERSION 	"1.0"
-#define SEND_NUM	200	
+#define SEND_NUM	200
 
 
 unsigned int kook_func(unsigned int hooknum,
@@ -28,9 +28,20 @@ unsigned int kook_func(unsigned int hooknum,
 	unsigned char mac_temp[ETH_ALEN] = {0};
 	struct ethhdr *mach = NULL;
 
+
+
 	ip_addr =  ip_hdr(skb);
 	if (ip_addr->protocol != IPPROTO_TCP)
 		return NF_ACCEPT;
+
+	mach = eth_hdr(skb);
+
+	if (mach == NULL)
+		return NF_ACCEPT;
+
+	printk(KERN_INFO"h_dest:%pM, h_source:%pM, h_proto:%x\n", \
+	mach->h_dest, mach->h_source, ntohs(mach->h_proto));
+
 	tcp_addr = tcp_hdr(skb);
 #if 0
 #define IP_CE		0x8000		/* Flag: "Congestion"		*/
@@ -80,6 +91,10 @@ cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\
 	tcp_addr->check,
 	ntohs(tcp_addr->urg_ptr));
 #else
+	printk(KERN_INFO"mach->h_dest:%pM\n", mach->h_dest);
+	printk(KERN_INFO"mach->h_source:%pM\n", mach->h_source);
+	printk(KERN_INFO"mach->h_proto:%x\n", ntohs(mach->h_proto));
+
 	pr_info("ip_addr->version:%d", ip_addr->version);
 	pr_info("ip_addr->ihl:%d", ip_addr->ihl);
 	pr_info("ip_addr->tos:%d", ip_addr->tos);
@@ -93,18 +108,8 @@ cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\
 	pr_info("ip_addr->daddr:%pI4",&ip_addr->daddr);
 #endif
 
-#if 0
-#if 0
-	printk(KERN_INFO"ip_addr->id:%d\n", ntohs(ip_addr->id));
-	printk(KERN_INFO"skb->dev->name:%s\n", skb->dev->name);
-	printk("tcp_addr->seq:%d\n", ntohs(tcp_addr->seq));
-	printk("tcp_addr->ack_seq:%d\n", ntohs(tcp_addr->ack_seq));
-#endif
+#if 1
 
-	/*
-	struct net_device	*dev;
-	printk(KERN_INFO"");
-	*/
 
 #if BITS_PER_LONG != 64 && !defined(CONFIG_KTIME_SCALAR)
 	printk(KERN_INFO"sec:%d\n",		\
@@ -112,30 +117,31 @@ cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\
 	printk(KERN_INFO"nsec:%d\n",		\
 			skb->tstamp.tv.nsec);
 #endif
-	payload = (char *)tcp_addr + tcp_hdrlen(skb);
-	datalen = ntohs(ip_addr->tot_len) - ip_addr->ihl * 4 - tcp_hdrlen(skb);
+#if 0
 
-#if 0
-	if (strncmp(payload, "GET", 3) == 0 || strncmp(payload, "POST", 4) == 0)
-#endif
-	{
-		printk(KERN_INFO"POST_ROUTING\n");
-		printk(KERN_INFO"dstaddr:%pI4\n", &ip_addr->daddr);
-		printk(KERN_INFO"srcaddr:%pI4\n", &ip_addr->saddr);
-		printk(KERN_INFO"datalen:%d\n",	datalen);
-		printk(KERN_INFO"----\n");
-#if 0
-		printk(KERN_INFO"%s\n", payload);
-#endif
-	}
 	while (count < SEND_NUM)
 	{
 		clone_skb = skb_clone(skb, GFP_ATOMIC);
+		if (clone_skb == NULL)
+		{
+			pr_info("clone_skb:%s\n", clone_skb);
+			return NF_ACCEPT;
+		}
+#if 0
 		printk(KERN_INFO"skb_clone_addr:%p\n", clone_skb);
 		mach = eth_hdr(clone_skb);
-		printk(KERN_INFO"mach->h_dest:%pM\n", mach->h_dest);
-		printk(KERN_INFO"mach->h_source:%pM\n", mach->h_source);
-		printk(KERN_INFO"mach->h_proto:%x\n", ntohs(mach->h_proto));
+		if (mach == NULL)
+		{
+			pr_info("mach:%s", mach);
+			return NF_ACCEPT;
+		}
+		else
+		{
+			printk(KERN_INFO"mach->h_dest:%pM\n", mach->h_dest);
+			printk(KERN_INFO"mach->h_source:%pM\n", mach->h_source);
+			printk(KERN_INFO"mach->h_proto:%x\n", ntohs(mach->h_proto));
+		}
+#endif
 #if 0
 		memcpy(mac_temp, (unsigned char *)mach->h_dest, ETH_ALEN);
 		memcpy(mach->h_dest, (unsigned char *)mach->h_source, ETH_ALEN);
@@ -146,6 +152,7 @@ cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\
 		printk(KERN_INFO"ret:%d\n", ret);
 		count++;
 	}
+#endif
 #endif
 	
 

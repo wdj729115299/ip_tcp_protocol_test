@@ -9,7 +9,6 @@
 #include <net/tcp.h>
 
 #define VERSION 	"1.0"
-#define SEND_NUM	200
 
 
 unsigned int kook_func(unsigned int hooknum,
@@ -25,7 +24,7 @@ unsigned int kook_func(unsigned int hooknum,
 
 
 	ip_addr =  ip_hdr(skb);
-	if (ip_addr->protocol != IPPROTO_TCP)
+	if (ip_addr == NULL ||  ip_addr->protocol != IPPROTO_TCP)
 		return NF_ACCEPT;
 
 	mach = eth_hdr(skb);
@@ -36,6 +35,9 @@ unsigned int kook_func(unsigned int hooknum,
 	mach->h_dest, mach->h_source, ntohs(mach->h_proto));
 
 	tcp_addr = tcp_hdr(skb);
+	if (tcp_addr == NULL)
+		return NF_ACCEPT;
+
 #if 0
 #define IP_CE		0x8000		/* Flag: "Congestion"		*/
 #define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/

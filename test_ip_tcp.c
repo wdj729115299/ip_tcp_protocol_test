@@ -18,15 +18,9 @@ unsigned int kook_func(unsigned int hooknum,
 			const struct net_device *out,
 			int (*okfn)(struct sk_buff *))
 {
+	struct ethhdr *mach = NULL;
 	struct iphdr 	*ip_addr = NULL;
 	struct tcphdr	*tcp_addr = NULL;
-	char 		*payload = NULL;
-	int 		datalen = 0;
-	struct sk_buff	*clone_skb;
-	int count = 0;
-	int ret = 0;
-	unsigned char mac_temp[ETH_ALEN] = {0};
-	struct ethhdr *mach = NULL;
 
 
 
@@ -35,7 +29,6 @@ unsigned int kook_func(unsigned int hooknum,
 		return NF_ACCEPT;
 
 	mach = eth_hdr(skb);
-
 	if (mach == NULL)
 		return NF_ACCEPT;
 
@@ -53,8 +46,6 @@ unsigned int kook_func(unsigned int hooknum,
 	pr_info("ip_addr->frag_off IP_MF:%d\n",ip_addr->frag_off & IP_MF);
 #endif
 	
-#if 1
-#if 0
 	pr_info("version:%d, ihl:%d, tos:%x, tot_len:%d,id:%d, frag_off:%d,\
 ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\
 	ip_addr->version,
@@ -68,7 +59,6 @@ ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\
 	ip_addr->check,
 	&ip_addr->saddr,
 	&ip_addr->daddr);
-#endif
 
 	pr_info("source:%d, dest:%d, seq:%d, ack_seq:%d, res1:%d,\
 doff:%d, fin:%d, syn:%d, rst:%d, psh:%d, ack:%d, urg:%d, ece:%d,\
@@ -90,71 +80,6 @@ cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\
 	ntohs(tcp_addr->window),
 	tcp_addr->check,
 	ntohs(tcp_addr->urg_ptr));
-#else
-	printk(KERN_INFO"mach->h_dest:%pM\n", mach->h_dest);
-	printk(KERN_INFO"mach->h_source:%pM\n", mach->h_source);
-	printk(KERN_INFO"mach->h_proto:%x\n", ntohs(mach->h_proto));
-
-	pr_info("ip_addr->version:%d", ip_addr->version);
-	pr_info("ip_addr->ihl:%d", ip_addr->ihl);
-	pr_info("ip_addr->tos:%d", ip_addr->tos);
-	pr_info("ip_addr->tot_len:%d", ntohs(ip_addr->tot_len));
-	pr_info("ip_addr->id:%d", ntohs(ip_addr->id));
-	pr_info("ip_addr->frag_off:%d", ntohs(ip_addr->frag_off));
-	pr_info("ip_addr->ttl:%d", ip_addr->ttl);
-	pr_info("ip_addr->protocol:%d", ip_addr->protocol);
-	pr_info("ip_addr->check:%d", ip_addr->check);
-	pr_info("ip_addr->saddr:%pI4", &ip_addr->saddr);
-	pr_info("ip_addr->daddr:%pI4",&ip_addr->daddr);
-#endif
-
-#if 1
-
-
-#if BITS_PER_LONG != 64 && !defined(CONFIG_KTIME_SCALAR)
-	printk(KERN_INFO"sec:%d\n",		\
-			skb->tstamp.tv.sec);
-	printk(KERN_INFO"nsec:%d\n",		\
-			skb->tstamp.tv.nsec);
-#endif
-#if 0
-
-	while (count < SEND_NUM)
-	{
-		clone_skb = skb_clone(skb, GFP_ATOMIC);
-		if (clone_skb == NULL)
-		{
-			pr_info("clone_skb:%s\n", clone_skb);
-			return NF_ACCEPT;
-		}
-#if 0
-		printk(KERN_INFO"skb_clone_addr:%p\n", clone_skb);
-		mach = eth_hdr(clone_skb);
-		if (mach == NULL)
-		{
-			pr_info("mach:%s", mach);
-			return NF_ACCEPT;
-		}
-		else
-		{
-			printk(KERN_INFO"mach->h_dest:%pM\n", mach->h_dest);
-			printk(KERN_INFO"mach->h_source:%pM\n", mach->h_source);
-			printk(KERN_INFO"mach->h_proto:%x\n", ntohs(mach->h_proto));
-		}
-#endif
-#if 0
-		memcpy(mac_temp, (unsigned char *)mach->h_dest, ETH_ALEN);
-		memcpy(mach->h_dest, (unsigned char *)mach->h_source, ETH_ALEN);
-		memcpy(mach->h_source, mac_temp, ETH_ALEN);
-#endif
-		skb_push(clone_skb , ETH_HLEN);
-		ret = dev_queue_xmit(clone_skb);
-		printk(KERN_INFO"ret:%d\n", ret);
-		count++;
-	}
-#endif
-#endif
-	
 
 	return NF_ACCEPT;
 }

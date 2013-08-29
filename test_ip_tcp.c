@@ -22,18 +22,20 @@ unsigned int kook_func(unsigned int hooknum,
 	struct tcphdr	*tcp_addr = NULL;
 
 
-	/* get ethernet header address */
+
+	ip_addr =  ip_hdr(skb);
+	if (ip_addr == NULL ||  ip_addr->protocol != IPPROTO_TCP)
+		goto is_accept;
+
 	mach = eth_hdr(skb);
 	if (mach == NULL)
 		goto is_accept;
 
-	/* show ethernet header argument */
 	pr_info("h_dest:%pM, h_source:%pM, h_proto:%x\n", \
 	mach->h_dest, mach->h_source, ntohs(mach->h_proto));
 
-	/* get ip header address */
-	ip_addr =  ip_hdr(skb);
-	if (ip_addr == NULL ||  ip_addr->protocol != IPPROTO_TCP)
+	tcp_addr = tcp_hdr(skb);
+	if (tcp_addr == NULL)
 		goto is_accept;
 
 #if 0
@@ -46,7 +48,6 @@ unsigned int kook_func(unsigned int hooknum,
 	pr_info("ip_addr->frag_off IP_MF:%d\n",ip_addr->frag_off & IP_MF);
 #endif
 	
-	/* show ip header argument */
 	pr_info("version:%d, ihl:%d, tos:%x, tot_len:%d,id:%d, frag_off:%d,\
 ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\
 	ip_addr->version,
@@ -61,12 +62,6 @@ ttl:%d, protocol:%d, check:%d, saddr:%pI4, daddr:%pI4\n",\
 	&ip_addr->saddr,
 	&ip_addr->daddr);
 
-	/* get tcp header address */
-	tcp_addr = tcp_hdr(skb);
-	if (tcp_addr == NULL)
-		goto is_accept;
-
-	/* show tcp header argument */
 	pr_info("source:%d, dest:%d, seq:%d, ack_seq:%d, res1:%d,\
 doff:%d, fin:%d, syn:%d, rst:%d, psh:%d, ack:%d, urg:%d, ece:%d,\
 cwr:%d, window:%d, check:%d, urg_ptr:%d\n",\

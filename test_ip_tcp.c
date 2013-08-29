@@ -102,15 +102,15 @@ static int __init my_init_module(void)
 	hook_ret = nf_register_hook(&nfho);
 	/* cleanup - unregister hook */
 	if (hook_ret)
-		printk("translog module false\n");
+		printk("ip tcp header module false\n");
 	else
-		printk("translog module true\n");
+		printk("ip tcp header module true\n");
 	return 0;
 }
 static void __exit my_exit_module(void)
 {
 	nf_unregister_hook(&nfho);
-	printk(KERN_INFO"translog: un\n");
+	printk(KERN_INFO"ip tcp header: un\n");
 	return;
 }
 module_init(my_init_module);
